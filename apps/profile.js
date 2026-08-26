@@ -1,5 +1,5 @@
 import { profileHelp } from './profile/ProfileCommon.js'
-import { profileArtisList } from './profile/ProfileArtis.js'
+import { profileArtisList, setArtisNumber } from './profile/ProfileArtis.js'
 import ProfileDetail from './profile/ProfileDetail.js'
 import ProfileStat from './profile/ProfileStat.js'
 import ProfileList from './profile/ProfileList.js'
@@ -61,6 +61,12 @@ app.reg({
     name: '面板排名榜',
     fn: groupRank,
     rule: /^#(星铁|原神)?(群|群内)?.+(排名|排行)(榜)?$/
+  },
+
+  artisNumber: {
+    name: '\u5723\u9057\u7269\u5217\u8868\u6570\u91cf',
+    fn: setArtisNumber,
+    rule: /^#\u5723\u9057\u7269\u5217\u8868\u6570\u91cf\s*(\d{1,3})$/
   },
 
   artisList: {

@@ -28,7 +28,7 @@ const Render = {
           defaultLayout: layoutPath + 'default.html',
           elemLayout: layoutPath + 'elem.html',
           sys: {
-            scale: Cfg.scale(cfg.scale || 1)
+            scale: cfg.noScale ? 'style=transform:scale(1)' : Cfg.scale(cfg.scale || 1)
           },
           copyright: `Created By ${Version.name}<span class="version">${Version.yunzai}</span>${pluginName}</span>`
         }

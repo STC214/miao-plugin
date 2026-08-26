@@ -110,3 +110,13 @@ git -C plugins/miao-plugin remote set-url origin https://github.com/yoimiya-koko
 * [Enka.Network](https://enka.network/): 感谢Enka提供的面板服务
 * [Snap.Hutao](https://hut.ao/) : 感谢 DGP Studio 开发的 [胡桃 API](https://github.com/DGP-Studio/Snap.Hutao.Server)
 
+
+
+
+## Fork scope
+
+Upstream: https://github.com/yoimiya-kokomi/miao-plugin
+
+This fork keeps the upstream plugin and changes only the `#圣遗物列表` behavior: the configurable limit is 4-200, results are rendered sequentially in pages of 24, multi-page results are sent as a forward message, and extra upscaling is disabled when the requested count is at least 96. Other miao-plugin commands and data are unchanged.
+
+Set the limit as master with `#圣遗物列表数量 [c]`.
