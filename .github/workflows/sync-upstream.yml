@@ -28,13 +28,11 @@ jobs:
         run: |
           git push origin upstream/master:refs/heads/upstream-sync --force
 
-      - name: Merge upstream into update branch
+      - name: Merge upstream into working tree
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B upstream-update origin/master
           git merge --no-edit upstream/master
-          git push origin upstream-update --force
 
       - name: Syntax checks
         run: |
