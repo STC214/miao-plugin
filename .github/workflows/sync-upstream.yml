@@ -36,7 +36,18 @@ jobs:
           git merge --no-edit upstream/master
           git push origin upstream-update --force
 
+      - name: Syntax checks
+        run: |
+          node --check apps/profile/ProfileArtis.js
+          node --check apps/profile.js
+          node --check components/common/Render.js
+          node --check config/system/cfg_system.js
+
+      - name: Customization unit checks
+        run: node --test .github/tests/customization.test.mjs
+
       - name: Open update pull request
+        id: update-pr
         uses: peter-evans/create-pull-request@v7
         with:
           branch: upstream-update
@@ -49,3 +60,10 @@ jobs:
 
             合并前请重点检查圣遗物列表定制文件，确认数量上限、分页、转发和高数量禁用超分逻辑仍然保留。
             若发生冲突，保持 master 不变，手动解决后再合并。
+
+      - name: Enable automatic merge
+        if: steps.update-pr.outputs.pull-request-number != ''
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.update-pr.outputs.pull-request-number }}
+          merge-method: squash
