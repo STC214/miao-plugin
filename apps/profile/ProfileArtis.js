@@ -109,7 +109,7 @@ export async function profileArtisList (e) {
       uid,
       artis: pageArtis,
       artisKeyTitle
-    }, { e, scale, noScale: number >= 96 }))
+    }, { e, scale, noScale: number >= 96, retType: 'base64' }))
   }
 
   await waitForLotusSigninPriority()
@@ -139,6 +139,12 @@ async function makeArtifactForward (e, pages, description) {
     } catch {}
   }
   const nodes = pages.map(message => ({ user_id: userId, nickname, message }))
+  // Bot.makeForwardMsg returns a node segment suitable for e.reply. Adapter
+  // scoped group/friend helpers may return a raw node array, which e.reply
+  // sends as separate messages instead of one forwarded message.
+  if (typeof globalThis.Bot?.makeForwardMsg === 'function') {
+    return globalThis.Bot.makeForwardMsg(nodes)
+  }
   if (typeof e?.group?.makeForwardMsg === 'function') return await e.group.makeForwardMsg(nodes)
   if (typeof e?.friend?.makeForwardMsg === 'function') return await e.friend.makeForwardMsg(nodes)
   if (typeof bot.makeForwardMsg === 'function') return await bot.makeForwardMsg(nodes)
