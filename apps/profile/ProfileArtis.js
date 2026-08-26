@@ -7,7 +7,6 @@ import { Cfg, Common, Meta } from '#miao'
 import { getTargetUid, profileHelp, getProfileRefresh } from './ProfileCommon.js'
 import { Artifact, Button, Character, Player } from '#miao.models'
 import ArtisMarkCfg from '../../models/artis/ArtisMarkCfg.js'
-import makemsg from '../../../../lib/common/common.js'
 
 /*
 * 角色圣遗物面板
@@ -101,6 +100,7 @@ export async function profileArtisList (e) {
   // Render sequentially in pages of 24 items.
   const pages = []
   for (let offset = 0; offset < artis.length; offset += 24) {
+    if (offset > 0) await waitForLotusSigninPriority()
     const pageArtis = artis.slice(offset, offset + 24)
     // Disable extra upscaling for requests of 96 or more items.
     const scale = number >= 96 ? 1 : 1.4
@@ -112,8 +112,10 @@ export async function profileArtisList (e) {
     }, { e, scale, noScale: number >= 96 }))
   }
 
+  await waitForLotusSigninPriority()
   if (pages.length === 1) return pages[0]
-  return e.reply(makemsg.makeForwardMsg(e, pages, `Artifact list (${pages.length} pages)`))
+  const forward = await makeArtifactForward(e, pages, `Artifact list (${pages.length} pages)`)
+  return e.reply(forward || pages)
 }
 
 /**
@@ -121,6 +123,28 @@ export async function profileArtisList (e) {
  * @param {Array} artis 圣遗物列表（每项含 main.key, attrs[].key, charWeight, idx）
  * @returns {Array} 过滤后的列表
  */
+async function waitForLotusSigninPriority () {
+  const coordinator = globalThis.__LOTUS_SIGNIN_COORDINATOR__
+  if (typeof coordinator?.waitForSignin === 'function') await coordinator.waitForSignin()
+}
+
+async function makeArtifactForward (e, pages, description) {
+  const bot = e?.bot || globalThis.Bot?.[e?.self_id] || globalThis.Bot || {}
+  const userId = String(bot.uin || bot.self_id || e?.self_id || e?.user_id || '0')
+  let nickname = String(bot.nickname || bot.name || 'miao-plugin')
+  if (e?.isGroup && typeof bot.getGroupMemberInfo === 'function') {
+    try {
+      const info = await bot.getGroupMemberInfo(e.group_id, userId)
+      nickname = info?.card || info?.nickname || nickname
+    } catch {}
+  }
+  const nodes = pages.map(message => ({ user_id: userId, nickname, message }))
+  if (typeof e?.group?.makeForwardMsg === 'function') return await e.group.makeForwardMsg(nodes)
+  if (typeof e?.friend?.makeForwardMsg === 'function') return await e.friend.makeForwardMsg(nodes)
+  if (typeof bot.makeForwardMsg === 'function') return await bot.makeForwardMsg(nodes)
+  return null
+}
+
 export async function setArtisNumber (e) {
   if (!e.isMaster) {
     e.reply('Only the master can set the artifact list count')
