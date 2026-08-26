@@ -1,0 +1,51 @@
+name: Sync miao-plugin upstream
+
+on:
+  schedule:
+    - cron: "20 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork master
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/yoimiya-kokomi/miao-plugin.git
+          git fetch upstream master
+
+      - name: Refresh upstream reference branch
+        run: |
+          git push origin upstream/master:refs/heads/upstream-sync --force
+
+      - name: Merge upstream into update branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B upstream-update origin/master
+          git merge --no-edit upstream/master
+          git push origin upstream-update --force
+
+      - name: Open update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: upstream-update
+          base: master
+          delete-branch: false
+          title: "同步 miao-plugin 上游更新"
+          commit-message: "同步 miao-plugin 上游更新"
+          body: |
+            此 PR 由工作流自动创建，用于同步 yoimiya-kokomi/miao-plugin 上游更新。
+
+            合并前请重点检查圣遗物列表定制文件，确认数量上限、分页、转发和高数量禁用超分逻辑仍然保留。
+            若发生冲突，保持 master 不变，手动解决后再合并。
