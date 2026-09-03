@@ -117,6 +117,6 @@ git -C plugins/miao-plugin remote set-url origin https://github.com/yoimiya-koko
 
 Upstream: https://github.com/yoimiya-kokomi/miao-plugin
 
-This fork keeps the upstream plugin and changes only the `#圣遗物列表` behavior: the configurable limit is 4-200, results are rendered sequentially in pages of 24, multi-page results are sent as a forward message, and extra upscaling is disabled when the requested count is at least 96. Other miao-plugin commands and data are unchanged.
+This fork keeps the upstream plugin. Its main runtime customization is the `#圣遗物列表` behavior: the configurable limit is 4-200; values below 40 keep one image; values from 40 onward are rendered sequentially in pages of 24; multi-page results are sent as a forward message; extra upscaling is disabled when the requested count is at least 96. When Lotus is installed, each page participates in its sign-in-priority coordination. Upstream command additions remain intact; this fork only corrects their directly observed help-text inconsistencies when needed.
 
 Set the limit as master with `#圣遗物列表数量 [c]`.

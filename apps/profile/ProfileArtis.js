@@ -7,6 +7,12 @@ import { Cfg, Common, Meta } from '#miao'
 import { getTargetUid, profileHelp, getProfileRefresh } from './ProfileCommon.js'
 import { Artifact, Button, Character, Player } from '#miao.models'
 import ArtisMarkCfg from '../../models/artis/ArtisMarkCfg.js'
+import {
+  artifactListDisablesUpscaling,
+  artifactListPageSize,
+  normalizeArtifactListLimit
+} from './ArtifactPaging.js'
+import { makeArtifactForward } from './ArtifactForward.js'
 
 /*
 * 角色圣遗物面板
@@ -90,31 +96,40 @@ export async function profileArtisList (e) {
 
   // 过滤主词条命中唯一有效属性且副词条全废的圣遗物/遗器
   artis = filterSingleEffArtis(artis)
+  if (artis.length === 0) {
+    e.reply('当前圣遗物列表在有效词条过滤后为空，请更新面板数据后重试')
+    return true
+  }
 
   artis = lodash.sortBy(artis, '_mark')
   artis = artis.reverse()
-  const number = Math.min(200, Math.max(4, Number(Cfg.get('artisNumber', 28)) || 28))
+  const number = normalizeArtifactListLimit(Cfg.get('artisNumber', 28))
   artis = artis.slice(0, number)
   let artisKeyTitle = Artifact.getArtisKeyTitle(game)
 
-  // Render sequentially in pages of 24 items.
+  // Values below 40 keep the original single-image behavior. From 40 onward,
+  // render sequentially in pages of 24 items.
+  const pageSize = artifactListPageSize(number)
+  const noScale = artifactListDisablesUpscaling(number)
+  const renderBatchId = `${uid}-${Date.now()}`
   const pages = []
-  for (let offset = 0; offset < artis.length; offset += 24) {
-    if (offset > 0) await waitForLotusSigninPriority()
-    const pageArtis = artis.slice(offset, offset + 24)
+  for (let offset = 0; offset < artis.length; offset += pageSize) {
+    const pageArtis = artis.slice(offset, offset + pageSize)
+    const pageNumber = Math.floor(offset / pageSize) + 1
     // Disable extra upscaling for requests of 96 or more items.
-    const scale = number >= 96 ? 1 : 1.4
-    pages.push(await Common.render('character/artis-list', {
-      save_id: uid,
+    const scale = noScale ? 1 : 1.4
+    pages.push(await renderArtifactPageWithSigninPriority(() => Common.render('character/artis-list', {
+      save_id: `${renderBatchId}-${pageNumber}`,
       uid,
       artis: pageArtis,
       artisKeyTitle
-    }, { e, scale, noScale: number >= 96, retType: 'base64' }))
+    }, { e, scale, noScale, retType: 'base64' })))
   }
 
   await waitForLotusSigninPriority()
   if (pages.length === 1) return pages[0]
-  const forward = await makeArtifactForward(e, pages, `Artifact list (${pages.length} pages)`)
+  const listName = game === 'sr' ? '遗器列表' : '圣遗物列表'
+  const forward = await makeArtifactForward(e, pages, `${listName}（共 ${pages.length} 页）`)
   return e.reply(forward || pages)
 }
 
@@ -128,42 +143,28 @@ async function waitForLotusSigninPriority () {
   if (typeof coordinator?.waitForSignin === 'function') await coordinator.waitForSignin()
 }
 
-async function makeArtifactForward (e, pages, description) {
-  const bot = e?.bot || globalThis.Bot?.[e?.self_id] || globalThis.Bot || {}
-  const userId = String(bot.uin || bot.self_id || e?.self_id || e?.user_id || '0')
-  let nickname = String(bot.nickname || bot.name || 'miao-plugin')
-  if (e?.isGroup && typeof bot.getGroupMemberInfo === 'function') {
-    try {
-      const info = await bot.getGroupMemberInfo(e.group_id, userId)
-      nickname = info?.card || info?.nickname || nickname
-    } catch {}
+export async function renderArtifactPageWithSigninPriority (renderPage) {
+  const coordinator = globalThis.__LOTUS_SIGNIN_COORDINATOR__
+  if (typeof coordinator?.runNonSigninTask === 'function') {
+    return coordinator.runNonSigninTask(renderPage)
   }
-  const nodes = pages.map(message => ({ user_id: userId, nickname, message }))
-  // Bot.makeForwardMsg returns a node segment suitable for e.reply. Adapter
-  // scoped group/friend helpers may return a raw node array, which e.reply
-  // sends as separate messages instead of one forwarded message.
-  if (typeof globalThis.Bot?.makeForwardMsg === 'function') {
-    return globalThis.Bot.makeForwardMsg(nodes)
-  }
-  if (typeof e?.group?.makeForwardMsg === 'function') return await e.group.makeForwardMsg(nodes)
-  if (typeof e?.friend?.makeForwardMsg === 'function') return await e.friend.makeForwardMsg(nodes)
-  if (typeof bot.makeForwardMsg === 'function') return await bot.makeForwardMsg(nodes)
-  return null
+  await waitForLotusSigninPriority()
+  return renderPage()
 }
 
 export async function setArtisNumber (e) {
   if (!e.isMaster) {
-    e.reply('Only the master can set the artifact list count')
+    e.reply('仅主人可以设置圣遗物列表数量')
     return true
   }
   const match = /^#\u5723\u9057\u7269\u5217\u8868\u6570\u91cf\s*(\d{1,3})$/.exec(e.msg)
   const value = Number(match?.[1])
   if (!Number.isInteger(value) || value < 4 || value > 200) {
-    e.reply('Artifact list count must be between 4 and 200')
+    e.reply('圣遗物列表数量必须在 4 到 200 之间')
     return true
   }
   Cfg.set('artisNumber', value)
-  e.reply(`Artifact list count set to ${value}`)
+  e.reply(`圣遗物列表数量已设置为 ${value}`)
   return true
 }
 

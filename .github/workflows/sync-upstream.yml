@@ -40,6 +40,8 @@ jobs:
           node --check apps/gacha/Gacha.js
           node --check apps/gacha/GachaPool.js
           node --check apps/profile/ProfileCommon.js
+          node --check apps/profile/ArtifactPaging.js
+          node --check apps/profile/ArtifactForward.js
           node --check apps/profile/ProfileArtis.js
           node --check apps/profile.js
           node --check components/common/Render.js
