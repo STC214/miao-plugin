@@ -36,13 +36,17 @@ jobs:
 
       - name: Syntax checks
         run: |
+          node --check apps/gacha.js
+          node --check apps/gacha/Gacha.js
+          node --check apps/gacha/GachaPool.js
+          node --check apps/profile/ProfileCommon.js
           node --check apps/profile/ProfileArtis.js
           node --check apps/profile.js
           node --check components/common/Render.js
           node --check config/system/cfg_system.js
 
       - name: Customization unit checks
-        run: node --test .github/tests/customization.test.mjs
+        run: node --test .github/tests/*.test.mjs
 
       - name: Open update pull request
         id: update-pr
