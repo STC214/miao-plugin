@@ -228,7 +228,8 @@ let DmgCalc = {
       case 'lunarCharged':
       case 'lunarCrystallize':
       case 'stellarConduct':
-      case 'stellarSwirl': {
+      case 'stellarSwirl':
+      case 'stellarVortex': {
         let base = dmgBase ? dmgBase : eleBaseDmg[level]
         ret = {
           avg: (base * (1 + fypct) * eleBase * eleNum + fyplus) * (1 + elevatedNum) * kNum * (1 + cpctNum * cdmgNum),

@@ -46,6 +46,13 @@ jobs:
           node --check apps/profile.js
           node --check components/common/Render.js
           node --check config/system/cfg_system.js
+          node --check models/dmg/DmgAttr.js
+          node --check models/dmg/DmgCalc.js
+          node --check resources/meta-gs/artifact/calc.js
+          node --check resources/meta-gs/weapon/catalyst/calc.js
+          node --check resources/meta-gs/weapon/claymore/calc.js
+          node --check resources/meta-gs/weapon/polearm/calc.js
+          node --check resources/meta-gs/weapon/sword/calc.js
 
       - name: Customization unit checks
         run: node --test .github/tests/*.test.mjs

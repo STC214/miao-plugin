@@ -174,7 +174,7 @@ const buffs = {
   翠绿之影: {
     2: attr('dmg', 15, '风'),
     4: {
-      title: '扩散反应造成的伤害提升60%，降低对应元素抗性40%；星扩散反应造成的伤害提升20%',
+      title: '扩散反应造成的伤害提升60%，降低对应元素抗性40%；星扩散反应造成的伤害提升20%；星辉冰旋伤害提升20%',
       data: {
         swirl: 60,
         fykx: 40,
@@ -646,10 +646,12 @@ const buffs = {
     2: attr('atkPct', 18),
     4: {
       check: ({ element }) => ['雷', '风', '冰'].includes(element),
-      title: '装备者触发星烁反应或造成星烁反应伤害后的12秒内，攻击力提升[atkPct]%，队伍中附近的所有角色造成的星烁反应伤害提升[stellarConduct]%。',
+      title: '装备者触发星烁反应或造成星烁反应伤害后的12秒内，攻击力提升[atkPct]%，队伍中附近的所有角色造成的星超导伤害提升[stellarConduct]%，星扩散伤害提升[stellarSwirl]%，星辉冰旋伤害提升[stellarVortex]%。',
       data: {
         atkPct: 12,
-        stellarConduct: 50
+        stellarConduct: 50,
+        stellarSwirl: 50,
+        stellarVortex: 50
       }
     }
   },
@@ -658,7 +660,7 @@ const buffs = {
     2: attr('atkPct', 18),
     4: {
       check: ({ element }) => ['风', '冰'].includes(element),
-      title: '装备者触发星扩散反应后的10秒内，暴击率提升[cpct]%，星扩散反应伤害提升[stellarSwirl]%。',
+      title: '装备者触发星扩散反应后的10秒内，暴击率提升[cpct]%，星扩散反应伤害提升[stellarSwirl]%，星辉冰旋伤害提升[stellarVortex]%。',
       data: {
         cpct: 16,
         stellarSwirl: 40,

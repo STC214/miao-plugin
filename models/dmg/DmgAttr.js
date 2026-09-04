@@ -100,6 +100,7 @@ let DmgAttr = {
         ret.lunarCrystallize = 0 // 月结晶
         ret.stellarConduct = 0 // 星超导
         ret.stellarSwirl = 0 // 星扩散
+        ret.stellarVortex = 0 // 星辉冰旋（星扩散·冰）
         ret.fykx = 0 // 敌人反应抗性降低
         ret.fyplus = 0 // 反应伤害值提升（数值/不受精通加成）
         ret.fypct = 0 // 反应基础伤害值提升（百分比/受精通加成）
@@ -113,6 +114,8 @@ let DmgAttr = {
         ret.punchline = 0 // 笑点
       }
     }
+    // 兼容升级前缓存的原始属性对象，避免新增反应字段参与加法时得到 NaN。
+    if (game === 'gs') ret.stellarVortex = ret.stellarVortex * 1 || 0
     return ret
   },
 
@@ -241,7 +244,7 @@ let DmgAttr = {
           return
         }
 
-        if (['vaporize', 'melt', 'crystallize', 'burning', 'superConduct', 'swirl', 'electroCharged', 'shatter', 'overloaded', 'bloom', 'burgeon', 'hyperBloom', 'aggravate', 'spread', 'elevated', 'lunarCharged', 'lunarBloom', 'lunarCrystallize', 'stellarConduct', 'stellarSwirl', 'kx', 'fykx', 'multi', 'fyplus', 'fypct', 'merrymakes', 'punchline'].includes(key)) {
+        if (['vaporize', 'melt', 'crystallize', 'burning', 'superConduct', 'swirl', 'electroCharged', 'shatter', 'overloaded', 'bloom', 'burgeon', 'hyperBloom', 'aggravate', 'spread', 'elevated', 'lunarCharged', 'lunarBloom', 'lunarCrystallize', 'stellarConduct', 'stellarSwirl', 'stellarVortex', 'kx', 'fykx', 'multi', 'fyplus', 'fypct', 'merrymakes', 'punchline'].includes(key)) {
           attr[key] += val * 1 || 0
           return
         }

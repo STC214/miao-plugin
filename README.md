@@ -119,4 +119,6 @@ Upstream: https://github.com/yoimiya-kokomi/miao-plugin
 
 This fork keeps the upstream plugin. Its main runtime customization is the `#圣遗物列表` behavior: the configurable limit is 4-200; values below 40 keep one image; values from 40 onward are rendered sequentially in pages of 24; multi-page results are sent as a forward message; extra upscaling is disabled when the requested count is at least 96. When Lotus is installed, each page participates in its sign-in-priority coordination. Upstream command additions remain intact; this fork only corrects their directly observed help-text inconsistencies when needed.
 
+The fork also carries a narrowly scoped upstream-compatibility fix for the stellar-vortex damage chain introduced by the 2026-09 upstream merge: `stellarVortex` is initialized for fresh and cached attributes, accepted by buff accumulation, calculated through the stellar-reaction branch, and disclosed by the affected artifact and weapon descriptions. This compatibility patch is covered by static and executable regression tests so later upstream synchronization cannot silently drop the field.
+
 Set the limit as master with `#圣遗物列表数量 [c]`.

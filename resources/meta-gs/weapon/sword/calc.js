@@ -326,7 +326,7 @@ export default function (step, staticStep) {
       }
     }, {
       check: ({ element }) => ['冰', '雷', '风'].includes(element),
-      title: '触发星烁反应后，星烁反应伤害提升[stellarConduct]%',
+      title: '触发星烁反应后，星超导伤害提升[stellarConduct]%，星扩散伤害提升[stellarSwirl]%，星辉冰旋伤害提升[stellarVortex]%',
       refine: {
         stellarConduct: step(16),
         stellarSwirl: step(16),
