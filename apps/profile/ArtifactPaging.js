@@ -15,3 +15,20 @@ export function artifactListPageSize (limit) {
 export function artifactListDisablesUpscaling (limit) {
   return limit >= 96
 }
+
+export async function renderArtifactPageWithRetry (renderPage, attempts = 2) {
+  const total = Math.max(1, Math.trunc(Number(attempts)) || 1)
+  let lastError = null
+  for (let attempt = 1; attempt <= total; attempt++) {
+    try {
+      const page = await renderPage(attempt)
+      if (page) return page
+      lastError = new Error(`artifact page render attempt ${attempt} returned an empty result`)
+    } catch (error) {
+      lastError = error
+    }
+  }
+  const error = new Error(`artifact page render failed after ${total} attempt(s)`)
+  error.cause = lastError
+  throw error
+}

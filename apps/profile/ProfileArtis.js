@@ -10,9 +10,10 @@ import ArtisMarkCfg from '../../models/artis/ArtisMarkCfg.js'
 import {
   artifactListDisablesUpscaling,
   artifactListPageSize,
-  normalizeArtifactListLimit
+  normalizeArtifactListLimit,
+  renderArtifactPageWithRetry
 } from './ArtifactPaging.js'
-import { makeArtifactForward } from './ArtifactForward.js'
+import { replyArtifactForward, replyArtifactPage } from './ArtifactForward.js'
 
 /*
 * 角色圣遗物面板
@@ -113,24 +114,39 @@ export async function profileArtisList (e) {
   const noScale = artifactListDisablesUpscaling(number)
   const renderBatchId = `${uid}-${Date.now()}`
   const pages = []
+  const renderFailures = []
+  const totalPages = Math.ceil(artis.length / pageSize)
+  const listName = game === 'sr' ? '遗器列表' : '圣遗物列表'
   for (let offset = 0; offset < artis.length; offset += pageSize) {
     const pageArtis = artis.slice(offset, offset + pageSize)
     const pageNumber = Math.floor(offset / pageSize) + 1
     // Disable extra upscaling for requests of 96 or more items.
     const scale = noScale ? 1 : 1.4
-    pages.push(await renderArtifactPageWithSigninPriority(() => Common.render('character/artis-list', {
-      save_id: `${renderBatchId}-${pageNumber}`,
-      uid,
-      artis: pageArtis,
-      artisKeyTitle
-    }, { e, scale, noScale, retType: 'base64' })))
+    try {
+      const page = await renderArtifactPageWithRetry(() => renderArtifactPageWithSigninPriority(() => Common.render('character/artis-list', {
+        save_id: `${renderBatchId}-${pageNumber}`,
+        uid,
+        artis: pageArtis,
+        artisKeyTitle
+      }, { e, scale, noScale, retType: 'base64' })), 2)
+      pages.push(page)
+    } catch (error) {
+      renderFailures.push({ page: pageNumber, error })
+      const reason = error.cause?.message || error.message
+      globalThis.logger?.warn?.(`[miao-plugin] artifact page ${pageNumber}/${totalPages} render failed after retry: ${reason}`)
+    }
   }
 
-  await waitForLotusSigninPriority()
-  if (pages.length === 1) return pages[0]
-  const listName = game === 'sr' ? '遗器列表' : '圣遗物列表'
-  const forward = await makeArtifactForward(e, pages, `${listName}（共 ${pages.length} 页）`)
-  return e.reply(forward || pages)
+  return renderArtifactPageWithSigninPriority(() => {
+    if (pages.length === 0) {
+      return replyArtifactPage(e, `${listName}图片渲染失败（共 ${totalPages} 页），请稍后重试。`)
+    }
+    if (pages.length === 1 && renderFailures.length === 0) return replyArtifactPage(e, pages[0])
+    const failureText = renderFailures.length
+      ? `；成功 ${pages.length}/${totalPages} 页，失败页：${renderFailures.map(item => item.page).join('、')}`
+      : ''
+    return replyArtifactForward(e, pages, `${listName}（共 ${totalPages} 页${failureText}）`)
+  })
 }
 
 /**
