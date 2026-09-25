@@ -298,6 +298,13 @@ export default function (step, staticStep) {
         stellarSwirl: step(16),
         stellarVortex: step(16)
       }
-    }]
+    }],
+    漩流颂歌: {
+      title: '治疗加成提升[heal]%，进行治疗时，生命值上限提升[hpPct]%',
+      refine: {
+        heal: step(4),
+				hpPct: step(4 * 3 * 1.75)
+      }
+    }
   }
 }
