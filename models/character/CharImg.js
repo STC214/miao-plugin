@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import lodash from 'lodash'
-import sizeOf from 'image-size'
+import sizeOf from '../../tools/image-size.js'
 import { Data, Cfg } from '#miao'
 import { miaoPath } from '#miao.path'
 
