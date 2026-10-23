@@ -68,7 +68,7 @@ const componentOverrides = {
     bottomHelpMessage: '伤害计算包含组队Buff。目前为测试阶段，数据可能不准确，请慎重开启。数据为固定Buff而非真实面板数据，最终计算数值可能有偏差'
   },
   artisNumber: {
-    componentProps: { min: 4, max: 100, step: 1 }
+    componentProps: { min: 4, max: 200, step: 1 }
   },
   // ---- 资料查询 ----
   roleCharInfoSource: {

@@ -67,7 +67,7 @@ let Gacha = {
     let maxLog = (diyCfg.detailCfg?.maxLog ?? sysCfg.detailCfg?.maxLog ?? 0) * 1
     let poolName = { 301: '角色', 302: '武器', 200: '常驻', 500: '集录', 11: '角色', 12: '光锥', 1: '常驻' }[type]
     // 记录页也必须携带由实际记录分析得到的欧皇度；不要只在 stat() 注入。
-    if (!gacha.luck) {
+    if (!gacha.luck && (diyCfg.luckCfg?.enable ?? sysCfg.luckCfg?.enable)) {
       let s = gacha.stat || {}
       let upPool = [301, 302, 11, 12].includes(type)
       let fiveNum = Number(s.fiveNum)
@@ -166,7 +166,7 @@ let Gacha = {
       type = 'normal'
     } else if (/集录/.test(msg)) {
       type = 'mix'
-    } else if (/全部/.test(msg)) {
+    } else if (isAll && !msg) {
       type = 'all'
     }
     let uid = e.uid || await getTargetUid(e)
