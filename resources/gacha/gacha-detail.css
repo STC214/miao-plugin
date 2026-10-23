@@ -1,9 +1,41 @@
 .avatar-cont {
   background: rgba(0, 0, 0, 0.1);
 }
-.user-banner .stat-li {
+.user-banner {
+  width: 740px;
+  height: 90px;
+  background-size: auto 100%;
+  padding-left: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.user-banner .face {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  margin: 0;
+}
+.user-banner .user-info {
   width: auto;
-  min-width: 75px;
+  padding: 4px 0 0;
+}
+.user-banner .stat {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 8px 0 0;
+  overflow: visible;
+  box-shadow: none;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.user-banner .stat-li,
+.user-banner .stat-li:first-child,
+.user-banner .stat-li:last-child {
+  width: auto;
+  min-width: 88px;
+  height: auto;
+  padding: 4px 8px;
 }
 .gacha-list .gacha-item {
   height: 38px;
@@ -138,4 +170,119 @@
 }
 .avatar-card .name {
   text-align: center;
+}
+.luck {
+  --luck-color: #e4c46a;
+  display: flex;
+  align-items: center;
+  margin: 10px 0 5px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+}
+.luck .luck-face {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 10px;
+  flex: 0 0 auto;
+  border: 2px solid var(--luck-color);
+}
+.luck .luck-main {
+  width: 150px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  text-align: left;
+}
+.luck .luck-label {
+  font-size: 13px;
+  color: #bbb;
+}
+.luck .luck-title {
+  font-family: Number, "印品南征北战NZBZ体", NZBZ, "汉仪文黑-65W", YS, sans-serif;
+  font-size: 34px;
+  line-height: 46px;
+  color: var(--luck-color);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+}
+.luck .luck-desc {
+  font-size: 12px;
+  color: #ccc;
+}
+.luck .luck-desc strong {
+  color: var(--luck-color);
+}
+.luck .luck-detail {
+  flex: 1;
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.luck .luck-line {
+  font-size: 15px;
+  color: #ddd;
+}
+.luck .luck-line strong {
+  font-size: 20px;
+  color: var(--luck-color);
+}
+.luck .luck-expect {
+  margin-left: 8px;
+  font-size: 13px;
+  color: #aaa;
+}
+.luck .luck-stat {
+  display: flex;
+  margin-top: 8px;
+}
+.luck .luck-stat-li {
+  flex: 1 1 auto;
+  padding: 0 4px;
+  text-align: center;
+}
+.luck .luck-stat-li strong {
+  display: block;
+  font-size: 18px;
+  color: #fff;
+}
+.luck .luck-stat-li span {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  color: #aaa;
+}
+.luck .luck-stat-li .pct {
+  color: var(--luck-color);
+}
+.luck .luck-tip {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #f0b37e;
+}
+.gacha-more {
+  padding: 8px 0 4px;
+  text-align: center;
+  font-size: 13px;
+  color: #aaa;
+}
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0 10px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 16px;
+  color: #ddd;
+}
+.page-head strong {
+  font-size: 20px;
+  color: #fff;
+  margin-right: 6px;
+}
+.page-head span {
+  color: #ffd484;
 }

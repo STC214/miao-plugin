@@ -11,7 +11,13 @@
 {{ set statMap = { totalNum:'抽卡总数', star5Num:'金卡',c5UpNum:'UP角色',w5UpNum:'UP武器', star4Num:'紫卡',avgUpNum:'平均UP抽' } }}
 
 {{block 'main'}}
-<div class="basic">
+<div class="basic gacha-stat-page">
+  {{if pageInfo && pageInfo.page > 1}}
+  <div class="page-head">
+    <strong>{{face.name}}</strong> #{{uid}} · {{poolName}}统计
+    <span>第 {{pageInfo.page}}/{{pageInfo.total}} 张</span>
+  </div>
+  {{else}}
   <div class="user-banner" style="background-image:url({{_res_path}}{{face?.banner}})">
     <div class="face">
       <span style="background-image:url({{_res_path}}{{face?.qFace||face?.face}})"></span>
@@ -54,6 +60,17 @@
     <strong>*常驻统计</strong>常驻池统计，
     <strong>*全部统计</strong>全部抽卡统计，
     <strong>*抽卡帮助</strong>获取帮助
+  </div>
+  {{/if}}
+  {{/if}}
+
+  {{if gacha.luck}}
+  <div class="stat-luck">
+    <img class="stat-luck-image" src="{{_res_path}}gacha/imgs/{{gacha.luck.image}}" />
+    <div class="stat-luck-copy">
+      <strong>{{gacha.luck.title}}</strong>
+      <span>欧皇度 {{gacha.luck.percent}}% · {{gacha.luck.desc}}</span>
+    </div>
   </div>
   {{/if}}
 
@@ -107,5 +124,11 @@
     </div>
   </div>
   {{/each}}
+  {{if gacha.hiddenNum}}
+  <div class="gacha-more">仅显示最近 {{gacha.shownNum}} 期卡池，更早的 {{gacha.hiddenNum}} 期未显示（顶部统计包含全部数据），发送 {{game === 'sr' ? '*' : '#'}}{{poolName}}全部统计 查看全部</div>
+  {{/if}}
+  {{if pageInfo}}
+  <div class="gacha-more">第 {{pageInfo.page}}/{{pageInfo.total}} 张 · 第 {{pageInfo.from}}~{{pageInfo.to}} 期，共 {{pageInfo.count}} 期卡池</div>
+  {{/if}}
 </div>
 {{/block}}
