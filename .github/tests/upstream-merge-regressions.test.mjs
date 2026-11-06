@@ -8,7 +8,7 @@ import { cfgSchema } from '../../config/system/cfg_system.js'
 const read = file => fs.readFileSync(new URL(`../../${file}`, import.meta.url), 'utf8')
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 
-async function loadGacha ({ enabled = true, result = false } = {}) {
+async function loadGacha ({ enabled = true, result = false, statData = null } = {}) {
   const rendered = []
   const requested = []
   const fixture = {
@@ -18,7 +18,7 @@ async function loadGacha ({ enabled = true, result = false } = {}) {
   }
   const GachaData = {
     analyse: () => structuredClone(fixture),
-    stat: (_qq, _uid, type, game) => { requested.push({ type, game }); return false },
+    stat: (_qq, _uid, type, game) => { requested.push({ type, game }); return statData ? structuredClone(statData) : false },
     limitLog: () => {}
   }
   const source = read('apps/gacha/Gacha.js')
@@ -28,7 +28,7 @@ async function loadGacha ({ enabled = true, result = false } = {}) {
   const gacha = await make(
     { render: async (_template, data) => { rendered.push(data); return 'image' } },
     { importCfg: async () => ({ sysCfg: { luckCfg: { enable: true } }, diyCfg: { luckCfg: { enable: enabled } } }) },
-    {}, () => '123', GachaData, { get: () => result, getImage: () => '3.jpg' }, {},
+    { makeForwardMsg: async (_event, images, title) => ({ images, title }) }, () => '123', GachaData, { get: () => result, getImage: () => '3.jpg' }, {},
     class { gacha () { return '' } }, {}, {}, {}
   )
   gacha.getFace = () => ({})
@@ -98,4 +98,17 @@ test('Guoba artifact count control preserves the local four-to-two-hundred range
   assert.equal(control.componentProps.min, 4)
   assert.equal(control.componentProps.max, 200)
   assert.equal(cfgSchema.profile.cfg.artisNumber.input(200), 200)
+})
+
+test('ordinary and all statistics keep bounded complete pages and local luck images', async () => {
+  assert.match(read('apps/gacha/Gacha.js'), /import GachaLuck from ['"]\.\/GachaLuck\.js['"]/)
+  const statData = { totalStat: { upNum: 2, totalNum: 120, star5Num: 2 }, versionData: Array.from({ length: 23 }, (_, id) => ({ id })) }
+  for (const command of ['#角色统计', '#角色全部统计', '#全部统计']) {
+    const fixture = await loadGacha({ statData, result: { title: 'fixture', percent: '92' } })
+    await fixture.gacha.stat(fixture.event(command))
+    assert.deepEqual(fixture.rendered.map(page => page.gacha.versionData.length), [10, 10, 3])
+    assert.deepEqual(fixture.rendered.flatMap(page => page.gacha.versionData), statData.versionData)
+    assert.ok(fixture.rendered.every(page => page.gacha.luck.image === '3.jpg'))
+    assert.equal('luck' in statData, false)
+  }
 })

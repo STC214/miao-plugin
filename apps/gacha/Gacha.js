@@ -166,7 +166,7 @@ let Gacha = {
       type = 'normal'
     } else if (/集录/.test(msg)) {
       type = 'mix'
-    } else if (isAll && !msg) {
+    } else if (msg === '全部' || (isAll && !msg)) {
       type = 'all'
     }
     let uid = e.uid || await getTargetUid(e)

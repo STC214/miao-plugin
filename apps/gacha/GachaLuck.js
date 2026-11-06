@@ -26,7 +26,7 @@ const conv = function (a, b, limit) {
 }
 
 let GachaLuck = {
-  // Select a local luck image without relying on external modules.
+  // Keep the fork's local luck image selection on both detail and summary pages.
   getImage (percent) {
     let p = Number(percent)
     if (!Number.isFinite(p)) p = 0
@@ -135,8 +135,8 @@ let GachaLuck = {
   get (data) {
     let { game, type, isUpPool } = data
     let typeMap = game === 'sr' ? { up: 11, char: 11, weapon: 12, normal: 1 } : { up: 301, char: 301, weapon: 302, normal: 200, mix: 500 }
-     type = typeMap[type] || type
-     let m = GachaLuck.getModel(game, type)
+    type = typeMap[type] || type
+    let m = GachaLuck.getModel(game, type)
     if (!luckCfg?.enable || !m) {
       return false
     }
