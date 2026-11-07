@@ -5,7 +5,7 @@
 - 原版本：`b750c3b40a6217ffab1f93830ed80a7692601944`。
 - 合入原上游：`9d8972c2b060ede67d1b0dc7565abb4fe39b3aa7`，7 提交，含合并提交。
 - 首次合并：`322e1f20897f17f6e8235a307024e4a89579f779`。
-- 复审仅新增本文件和 `.github/tests/upstream-20261107.test.mjs`；不继续追入新的上游版本。
+- 复审新增本文件和 `.github/tests/upstream-20261107.test.mjs`，并补齐自动同步工作流的测试运行时及依赖；不继续追入新的上游版本。
 - Lotus、面板网关、账号数据、喵喵运行配置和既有自定义功能不变。
 
 ## 六个上游文件逐项审查
@@ -68,6 +68,18 @@ git diff --check
 ```
 
 原有 31 项加新增 8 项，共 39 项。维护机保留两轮输出及容器验收输出，成功/失败、退出码均按实际记录；未向 QQ 群发送测试消息。
+
+### 干净 CI 环境
+
+此前工作流直接运行测试，没有安装 `tools/image-size.js` 引用的外部依赖，干净 runner 会报 `ERR_MODULE_NOT_FOUND`。现在先使用 Node 24，在 runner 临时目录安装固定的 `image-size@2.0.4`，关闭安装脚本，再将该目录链接为测试用 `node_modules`。不会安装运行插件的完整依赖树或修改仓库锁文件。已有通配符会覆盖新增 8 项测试。
+
+```sh
+npm install --prefix "$RUNNER_TEMP/miao-test-deps" --ignore-scripts --no-audit --no-fund --package-lock=false --save=false image-size@2.0.4
+ln -s "$RUNNER_TEMP/miao-test-deps/node_modules" node_modules
+node --test .github/tests/*.test.mjs
+```
+
+维护机另用新安装的同版本依赖运行完整测试，排除仅因复用了现有本地依赖而通过的情况；这是本地 CI 等效验证，不冒称 GitHub Actions 已线上运行成功。
 
 ## 容器启动的 ONNX 构建策略
 

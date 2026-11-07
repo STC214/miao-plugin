@@ -19,6 +19,16 @@ jobs:
           fetch-depth: 0
           ref: master
 
+      - name: Prepare test runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install isolated test dependency
+        run: |
+          npm install --prefix "$RUNNER_TEMP/miao-test-deps" --ignore-scripts --no-audit --no-fund --package-lock=false --save=false image-size@2.0.4
+          ln -s "$RUNNER_TEMP/miao-test-deps/node_modules" node_modules
+
       - name: Fetch upstream
         run: |
           git remote add upstream https://github.com/yoimiya-kokomi/miao-plugin.git
