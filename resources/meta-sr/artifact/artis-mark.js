@@ -110,5 +110,5 @@ export const usefulAttr = {
   '穹·记忆': { hp: 0, atk: 100, def: 0, speed: 100, cpct: 0, cdmg: 100, stance: 0, heal: 0, recharge: 50, effPct: 0, effDef: 0, dmg: 0 },
   '星·记忆': { hp: 0, atk: 100, def: 0, speed: 100, cpct: 0, cdmg: 100, stance: 0, heal: 0, recharge: 50, effPct: 0, effDef: 0, dmg: 0 },
   '穹·欢愉': { hp: 0, atk: 100, def: 0, speed: 100, cpct: 75, cdmg: 75, stance: 0, heal: 0, recharge: 100, effPct: 0, effDef: 0, dmg: 0 },
-  '星·欢愉': { hp: 0, atk: 100, def: 0, speed: 100, cpct: 75, cdmg: 75, stance: 0, heal: 0, recharge: 100, effPct: 0, effDef: 0, dmg: 0 },  
+  '星·欢愉': { hp: 0, atk: 100, def: 0, speed: 100, cpct: 75, cdmg: 75, stance: 0, heal: 0, recharge: 100, effPct: 0, effDef: 0, dmg: 0 },
 }
